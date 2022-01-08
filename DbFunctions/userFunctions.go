@@ -40,6 +40,20 @@ func RetrieveUser(id int) (Models.User,error) {
 	return user,nil
 }
 
+func RetrieveUserByEmail(email string) (Models.User,error) {
+	db:=Configration.SetUpDB()
+	defer db.Close()
+	query:="SELECT * FROM user WHERE userEmail=?"
+	var user Models.User
+	row:=db.QueryRow(query,email)
+	err:=row.Scan(&user.ID,&user.Name,&user.Email,&user.Password,&user.Phone)
+	if err!=nil{
+		log.Println("error while parsing data", err.Error())
+		return user,err
+	}
+	return user,nil
+}
+
 func RetrieveAllUsers()([]Models.User,error){
 	db:=Configration.SetUpDB()
 	defer db.Close()
@@ -96,9 +110,24 @@ func DeleteTheUser(userId int)error{
 	return nil
 }
 
+func AddVerificationCode(verify Models.VerificationCode)error{
+	db:=Configration.SetUpDB()
+	defer db.Close()
+	query:="INSERT INTO verifications set userEmail =?,verificationCode=?"
+	insert,err:=db.Prepare(query)
+	if err!=nil{
+		log.Println("error while executing insert query", err.Error())
+		return err
+	}
+	_,err=insert.Exec(verify.UserEmail,verify.VerificationCode)
+	if err!=nil{
+		log.Println("error while parsing data", err.Error())
+		return err
+	}
+	return nil
+}
 
-
-func CreateOtp()string {
+func CreateOtp()string{
 	var table = [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
 	max := 6
 	b := make([]byte, max)

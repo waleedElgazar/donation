@@ -1,7 +1,7 @@
 package Models
 
 type VerificationCode struct {
-	Id int `json:"id"`
+	Id               int    `json:"id"`
 	VerificationCode string `json:"code"`
-	USerEmail	string `json:"user_email"`
+	UserEmail        string `json:"user_email"`
 }
